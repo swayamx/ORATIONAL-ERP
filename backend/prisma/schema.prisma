@@ -1,0 +1,155 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  email              String             @unique
+  passwordHash       String
+  name               String
+  role               String             // ADMIN, OPERATIONS, SALES
+  assignedLocationId String?
+  assignedLocation   Location?          @relation("UserAssignedLocation", fields: [assignedLocationId], references: [id])
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  assignedWorkOrders WorkOrder[]        @relation("AssignedWorkOrders")
+  createdTransfers   InternalTransfer[] @relation("CreatedTransfers")
+  createdOrders      CustomerOrder[]    @relation("CreatedOrders")
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inventories            Inventory[]
+  workOrders             WorkOrder[]
+  sourceTransfers        InternalTransfer[] @relation("SourceLocationTransfers")
+  destinationTransfers   InternalTransfer[] @relation("DestinationLocationTransfers")
+  customerOrders         CustomerOrder[]
+  assignedUsers          User[]             @relation("UserAssignedLocation")
+  inventoryTransactions  InventoryTransaction[]
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  sku         String   @unique
+  name        String
+  category    String   // RAW_MATERIAL, COMPONENT, FINISHED_GOOD
+  uom         String   @default("UNITS")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  inventories           Inventory[]
+  workOrders            WorkOrder[]
+  transfers             InternalTransfer[]
+  orderItems            OrderItem[]
+  inventoryTransactions InventoryTransaction[]
+}
+
+model Inventory {
+  id               String   @id @default(uuid())
+  itemId           String
+  locationId       String
+  batchNumber      String   @default("BATCH-MAIN")
+  physicalQuantity Int      @default(0)
+  reservedQuantity Int      @default(0)
+  damagedQuantity  Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  item     Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, locationId, batchNumber])
+}
+
+model WorkOrder {
+  id               String   @id @default(uuid())
+  workOrderNumber  String   @unique
+  locationId       String
+  itemId           String
+  requiredQuantity Int
+  assignedUserId   String
+  status           String   @default("ASSIGNED") // ASSIGNED, IN_PROGRESS, COMPLETED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  location     Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  item         Item     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  assignedUser User     @relation("AssignedWorkOrders", fields: [assignedUserId], references: [id], onDelete: Restrict)
+}
+
+model InternalTransfer {
+  id                    String    @id @default(uuid())
+  transferNumber         String    @unique
+  sourceLocationId      String
+  destinationLocationId String
+  itemId                String
+  batchNumber           String?   @default("BATCH-MAIN")
+  quantity              Int
+  receivedQuantity      Int       @default(0)
+  status                String    @default("REQUESTED") // REQUESTED, DISPATCHED, RECEIVED, CANCELLED
+  createdById           String
+  dispatchedAt          DateTime?
+  receivedAt            DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  sourceLocation      Location @relation("SourceLocationTransfers", fields: [sourceLocationId], references: [id], onDelete: Restrict)
+  destinationLocation Location @relation("DestinationLocationTransfers", fields: [destinationLocationId], references: [id], onDelete: Restrict)
+  item                Item     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  createdBy           User     @relation("CreatedTransfers", fields: [createdById], references: [id], onDelete: Restrict)
+}
+
+model CustomerOrder {
+  id           String      @id @default(uuid())
+  orderNumber  String      @unique
+  customerName String
+  locationId   String
+  status       String      @default("RESERVED") // RESERVED, FULFILLED, CANCELLED
+  createdById  String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  location  Location    @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  createdBy User        @relation("CreatedOrders", fields: [createdById], references: [id], onDelete: Restrict)
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id              String  @id @default(uuid())
+  customerOrderId String
+  itemId          String
+  batchNumber     String? @default("BATCH-MAIN")
+  quantity        Int
+
+  customerOrder CustomerOrder @relation(fields: [customerOrderId], references: [id], onDelete: Cascade)
+  item          Item          @relation(fields: [itemId], references: [id], onDelete: Restrict)
+}
+
+model InventoryTransaction {
+  id             String   @id @default(uuid())
+  itemId         String
+  locationId     String
+  batchNumber    String?
+  type           String   // INITIAL, WO_ALLOCATION, TRANSFER_DISPATCH, TRANSFER_RECEIVE, ORDER_RESERVE, ORDER_RELEASE, DAMAGE_ADJUST
+  quantityChange Int
+  referenceId    String?
+  notes          String?
+  performedById  String?
+  createdAt      DateTime @default(now())
+
+  item     Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+}
