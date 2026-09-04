@@ -62,6 +62,58 @@
       line-height: 1;
       white-space: nowrap;
     }
+    @media print {
+      @page {
+        margin: 12mm 15mm;
+        size: auto;
+      }
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+        font-size: 10pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #login-view, header, nav, footer, #toast, [id^="modal-"], #dash-clean-slate-banner, .no-print, button, select, input {
+        display: none !important;
+      }
+      body.printing-report #app-view {
+        display: none !important;
+      }
+      body.printing-report #print-report-container {
+        display: block !important;
+        visibility: visible !important;
+        position: static !important;
+        width: 100% !important;
+      }
+      .page-break {
+        page-break-before: always;
+        break-before: page;
+      }
+      .avoid-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+      th, td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 6px 8px !important;
+      }
+      thead {
+        display: table-header-group !important;
+      }
+      tr {
+        page-break-inside: avoid !important;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen antialiased flex flex-col">
@@ -209,6 +261,12 @@
               </button>
             </div>
 
+            <!-- Export PDF Reports Button -->
+            <button onclick="openExportModal()" title="Export PDF Reports" class="inline-flex items-center px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 rounded-lg text-xs font-semibold shadow-xs transition-colors">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export PDF
+            </button>
+
             <!-- Run Tests Suite Modal -->
             <button onclick="openTestModal()" class="inline-flex items-center px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors">
               <svg class="w-3.5 h-3.5 mr-1 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -221,7 +279,10 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
               </button>
               <div id="quick-menu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-50 text-xs">
-                <button onclick="clearAllStock()" class="w-full text-left px-4 py-2 hover:bg-amber-50 text-amber-700 font-medium flex items-center">
+                <button onclick="openExportModal()" class="w-full text-left px-4 py-2 hover:bg-rose-50 text-rose-700 font-medium flex items-center">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 mr-2"></span> Export PDF Operations Report
+                </button>
+                <button onclick="clearAllStock()" class="w-full text-left px-4 py-2 hover:bg-amber-50 text-amber-700 font-medium flex items-center border-t border-slate-100">
                   <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span> Clear All Stock (Reset to 0)
                 </button>
                 <button onclick="clearAllTransactions()" class="w-full text-left px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium flex items-center border-t border-slate-100">
@@ -350,13 +411,17 @@
             <p class="text-xs text-slate-400">Current network state across Austin, Dallas, and Chicago</p>
           </div>
 
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2">
             <div class="flex items-center bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-xs shadow-xs">
               <span class="text-slate-400 mr-2 text-[11px] font-medium">Filter Facility:</span>
               <select id="dash-location-filter" onchange="renderDashboard()" class="bg-transparent text-slate-800 font-semibold focus:outline-none cursor-pointer">
                 <option value="">All Facilities</option>
               </select>
             </div>
+            <button onclick="openExportModal('EXECUTIVE')" title="Export Executive PDF Report" class="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export PDF
+            </button>
           </div>
         </div>
 
@@ -553,6 +618,10 @@
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openExportModal('INVENTORY')" title="Export Inventory Stock PDF Report" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors flex items-center shadow-xs">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export Stock (PDF)
+            </button>
             <button onclick="openInwardModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center">
               <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
               Receive Inward Stock
@@ -626,9 +695,15 @@
               Admin schedules work orders. System calculates real-time material shortages automatically.
             </p>
           </div>
-          <button onclick="openCreateWoModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs">
-            + Create Work Order
-          </button>
+          <div class="flex items-center space-x-2">
+            <button onclick="openExportModal('WORK_ORDERS')" title="Export Work Orders PDF Report" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold shadow-xs flex items-center transition-colors">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export PDF
+            </button>
+            <button onclick="openCreateWoModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs">
+              + Create Work Order
+            </button>
+          </div>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
@@ -666,9 +741,15 @@
               Two-phase transfer lifecycle: source decreases on dispatch; destination increases on receipt.
             </p>
           </div>
-          <button onclick="openCreateTransferModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs">
-            + Request Internal Transfer
-          </button>
+          <div class="flex items-center space-x-2">
+            <button onclick="openExportModal('TRANSFERS')" title="Export Transfer Manifest PDF Report" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold shadow-xs flex items-center transition-colors">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export Manifest (PDF)
+            </button>
+            <button onclick="openCreateTransferModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs">
+              + Request Internal Transfer
+            </button>
+          </div>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
@@ -705,6 +786,10 @@
             </p>
           </div>
           <div class="flex items-center space-x-2">
+            <button onclick="openExportModal('ORDERS')" title="Export Customer Orders PDF Report" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold shadow-xs flex items-center transition-colors">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export Orders (PDF)
+            </button>
             <button onclick="runConcurrencySimulation()" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-lg text-xs font-semibold shadow-xs">
               Test Stock Contention
             </button>
@@ -761,9 +846,15 @@
               Immutable journal recording all inward receipts, production consumptions, transfers, and order reservations.
             </p>
           </div>
-          <button onclick="clearLedger()" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50">
-            Clear History
-          </button>
+          <div class="flex items-center space-x-2">
+            <button onclick="openExportModal('LEDGER')" title="Export Audit Ledger PDF Report" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold shadow-xs flex items-center transition-colors">
+              <svg class="w-3.5 h-3.5 mr-1 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              Export Ledger (PDF)
+            </button>
+            <button onclick="clearLedger()" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50">
+              Clear History
+            </button>
+          </div>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
@@ -1084,6 +1175,74 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal: Export Operations PDF Reports -->
+  <div id="modal-export" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Export Operations PDF Report</h3>
+            <p class="text-xs text-slate-500">Official vector report with audit verification & metrics</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-export')" class="text-slate-400 hover:text-slate-700 font-medium text-sm">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Select Report Type</label>
+          <select id="export-report-type" onchange="updateExportPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white font-medium focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="EXECUTIVE">📊 Complete Executive Operations Report</option>
+            <option value="CURRENT">📄 Current Active View</option>
+            <option value="INVENTORY">📦 Inventory Stock & Batch Valuation</option>
+            <option value="WORK_ORDERS">⚙️ Work Orders & Production Traveler</option>
+            <option value="TRANSFERS">🚚 Internal Stock Transfer Manifest</option>
+            <option value="ORDERS">🛒 Customer Orders & Invoices</option>
+            <option value="LEDGER">📜 Compliance Audit Ledger Journal</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Facility Scope</label>
+          <select id="export-location-filter" onchange="updateExportPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white font-medium focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="">All Facilities</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Live PDF Report Preview Box -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Report Preview</span>
+          <span class="text-[11px] text-slate-400">Crisp vector layout for print & PDF save</span>
+        </div>
+        <div id="export-preview-box" class="bg-slate-50 border border-slate-200 rounded-xl p-4 max-h-72 overflow-y-auto text-xs shadow-inner">
+          <!-- Live Preview Generated Here -->
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+        <div class="text-[11px] text-slate-500 flex items-center space-x-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Target: In the browser print dialog, select <strong>"Save as PDF"</strong></span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeModal('modal-export')" class="px-3.5 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button onclick="executeExportPDF()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs flex items-center space-x-1.5">
+            <svg class="w-4 h-4 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            <span>Print / Save as PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Isolated Printable Container (Rendered on Demand for PDF) -->
+  <div id="print-report-container" class="hidden"></div>
 
   <!-- ================================================================= -->
   <!-- JAVASCRIPT BUSINESS ENGINE (100% FUNCTIONAL - NO DUMMIES) -->
@@ -1426,7 +1585,10 @@
       setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3200);
     }
 
+    let currentActiveTab = 'dashboard';
+
     function switchTab(tabId) {
+      currentActiveTab = tabId;
       toggleQuickMenu(false);
       ['dashboard', 'inventory', 'work-orders', 'transfers', 'orders', 'ledger'].forEach(t => {
         const tabEl = document.getElementById(`tab-${t}`);
@@ -1445,7 +1607,7 @@
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     function populateDropdowns() {
-      const locSelects = ['dash-location-filter', 'inv-loc-filter', 'wo-input-loc', 'tr-input-source', 'tr-input-dest', 'ord-input-loc', 'inw-input-loc'];
+      const locSelects = ['dash-location-filter', 'inv-loc-filter', 'wo-input-loc', 'tr-input-source', 'tr-input-dest', 'ord-input-loc', 'inw-input-loc', 'export-location-filter'];
       locSelects.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -3230,6 +3392,562 @@
         menu.classList.add('hidden');
       }
     });
+
+    // =================================================================
+    // PDF REPORT EXPORT & PRINT ENGINE (100% OFFLINE VECTOR COMPLIANT)
+    // =================================================================
+
+    function openExportModal(defaultType = null) {
+      const typeSelect = document.getElementById('export-report-type');
+      if (typeSelect) {
+        if (defaultType) typeSelect.value = defaultType;
+        else if (typeSelect.value === 'CURRENT') typeSelect.value = 'EXECUTIVE';
+      }
+      const locSelect = document.getElementById('export-location-filter');
+      if (locSelect) {
+        const dashFilter = document.getElementById('dash-location-filter')?.value;
+        const invFilter = document.getElementById('inv-loc-filter')?.value;
+        locSelect.value = dashFilter || invFilter || '';
+      }
+      updateExportPreview();
+      openModal('modal-export');
+    }
+
+    function updateExportPreview() {
+      const type = document.getElementById('export-report-type')?.value || 'EXECUTIVE';
+      const locId = document.getElementById('export-location-filter')?.value || '';
+      const previewBox = document.getElementById('export-preview-box');
+      if (previewBox) {
+        previewBox.innerHTML = generateReportHTML(type, locId, true);
+      }
+    }
+
+    function executeExportPDF() {
+      const type = document.getElementById('export-report-type')?.value || 'EXECUTIVE';
+      const locId = document.getElementById('export-location-filter')?.value || '';
+      exportToPDF(type, locId);
+    }
+
+    function exportToPDF(type = 'EXECUTIVE', locId = '') {
+      closeModal('modal-export');
+      let resolvedType = type;
+      if (resolvedType === 'CURRENT') {
+        const tabMap = {
+          'dashboard': 'EXECUTIVE',
+          'inventory': 'INVENTORY',
+          'work-orders': 'WORK_ORDERS',
+          'transfers': 'TRANSFERS',
+          'orders': 'ORDERS',
+          'ledger': 'LEDGER'
+        };
+        resolvedType = tabMap[currentActiveTab] || 'EXECUTIVE';
+      }
+
+      const container = document.getElementById('print-report-container');
+      if (!container) return;
+      container.innerHTML = generateReportHTML(resolvedType, locId, false);
+
+      showToast('Opening PDF Print dialog... Select "Save as PDF"');
+      triggerPDFPrint();
+    }
+
+    function triggerPDFPrint() {
+      document.body.classList.add('printing-report');
+      const cleanup = () => {
+        document.body.classList.remove('printing-report');
+        window.removeEventListener('afterprint', cleanup);
+      };
+      window.addEventListener('afterprint', cleanup);
+
+      setTimeout(() => {
+        window.print();
+        setTimeout(cleanup, 1200);
+      }, 200);
+    }
+
+    function generateReportHTML(type, locId = '', isPreview = false) {
+      let activeType = type;
+      if (activeType === 'CURRENT') {
+        const tabMap = {
+          'dashboard': 'EXECUTIVE',
+          'inventory': 'INVENTORY',
+          'work-orders': 'WORK_ORDERS',
+          'transfers': 'TRANSFERS',
+          'orders': 'ORDERS',
+          'ledger': 'LEDGER'
+        };
+        activeType = tabMap[currentActiveTab] || 'EXECUTIVE';
+      }
+
+      const targetLoc = locId ? DB.locations.find(l => l.id === locId) : null;
+      const locTitle = targetLoc ? targetLoc.name : 'All Facilities (Network-Wide)';
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      const docRef = 'ORP-' + now.toISOString().slice(0, 10).replace(/-/g, '') + '-' + (Math.floor(Math.random() * 8999) + 1000);
+
+      // Data subsets
+      const invList = locId ? DB.inventory.filter(i => i.locationId === locId) : DB.inventory;
+      const totalPhysical = invList.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
+      const totalReserved = invList.reduce((s, i) => s + (Number(i.reserved) || 0), 0);
+      const totalDamaged = invList.reduce((s, i) => s + (Number(i.damaged) || 0), 0);
+      const totalAvail = Math.max(0, totalPhysical - totalReserved - totalDamaged);
+
+      const woList = locId ? DB.workOrders.filter(w => w.locationId === locId) : DB.workOrders;
+      const trList = locId ? DB.transfers.filter(t => t.sourceLocationId === locId || t.destLocationId === locId) : DB.transfers;
+      const ordList = locId ? DB.customerOrders.filter(o => o.locationId === locId) : DB.customerOrders;
+      const ledList = locId ? DB.ledger.filter(l => l.locationId === locId) : DB.ledger;
+
+      let reportTitle = 'OPERATIONS EXECUTIVE SUMMARY';
+      if (activeType === 'INVENTORY') reportTitle = 'INVENTORY VALUATION & STOCK BALANCE SHEET';
+      else if (activeType === 'WORK_ORDERS') reportTitle = 'WORK ORDERS & PRODUCTION TRAVELER';
+      else if (activeType === 'TRANSFERS') reportTitle = 'INTER-FACILITY MATERIAL TRANSFER MANIFEST';
+      else if (activeType === 'ORDERS') reportTitle = 'CUSTOMER ORDERS & STOCK ALLOCATION REPORT';
+      else if (activeType === 'LEDGER') reportTitle = 'COMPLIANCE AUDIT LEDGER & TRANSACTION JOURNAL';
+
+      const cardBg = isPreview ? '#ffffff' : '#f8fafc';
+      const borderColor = '#e2e8f0';
+
+      let kpiCardsHTML = '';
+      if (activeType === 'EXECUTIVE') {
+        kpiCardsHTML = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Physical Stock</div>
+              <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 4px;">${totalPhysical.toLocaleString()}</div>
+              <div style="font-size: 10px; color: #10b981; font-weight: 500; margin-top: 2px;">${totalAvail.toLocaleString()} available</div>
+            </div>
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Work Orders</div>
+              <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 4px;">${woList.length}</div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px;">${woList.filter(w => w.status === 'COMPLETED').length} completed</div>
+            </div>
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Transfers</div>
+              <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 4px;">${trList.length}</div>
+              <div style="font-size: 10px; color: #0284c7; margin-top: 2px;">${trList.filter(t => t.status === 'DISPATCHED').length} in-transit</div>
+            </div>
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Customer Orders</div>
+              <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 4px;">${ordList.length}</div>
+              <div style="font-size: 10px; color: #10b981; margin-top: 2px;">${ordList.filter(o => o.status === 'FULFILLED').length} fulfilled</div>
+            </div>
+          </div>
+        `;
+      } else if (activeType === 'INVENTORY') {
+        kpiCardsHTML = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Total Physical</div>
+              <div style="font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 4px;">${totalPhysical.toLocaleString()}</div>
+            </div>
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Allocated (Reserved)</div>
+              <div style="font-size: 20px; font-weight: bold; color: #d97706; margin-top: 4px;">${totalReserved.toLocaleString()}</div>
+            </div>
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Damaged / Non-Op</div>
+              <div style="font-size: 20px; font-weight: bold; color: #e11d48; margin-top: 4px;">${totalDamaged.toLocaleString()}</div>
+            </div>
+            <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 10px 14px;">
+              <div style="font-size: 10px; color: #64748b; font-weight: 600; text-transform: uppercase;">Net Available</div>
+              <div style="font-size: 20px; font-weight: bold; color: #10b981; margin-top: 4px;">${totalAvail.toLocaleString()}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      let tablesHTML = '';
+
+      if (activeType === 'EXECUTIVE') {
+        tablesHTML += `
+          <div style="margin-bottom: 22px; page-break-inside: avoid;">
+            <div style="font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">1. Facility Inventory Matrix</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+              <thead>
+                <tr style="background: #0f172a; color: #ffffff;">
+                  <th style="padding: 6px 10px;">Facility</th>
+                  <th style="padding: 6px 10px;">Type / Role</th>
+                  <th style="padding: 6px 10px; text-align: right;">Batches</th>
+                  <th style="padding: 6px 10px; text-align: right;">Physical Stock</th>
+                  <th style="padding: 6px 10px; text-align: right;">Reserved</th>
+                  <th style="padding: 6px 10px; text-align: right;">Net Available</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${DB.locations.map((loc, idx) => {
+                  const bList = DB.inventory.filter(i => i.locationId === loc.id);
+                  const phys = bList.reduce((s, i) => s + (Number(i.quantity) || 0), 0);
+                  const res = bList.reduce((s, i) => s + (Number(i.reserved) || 0), 0);
+                  const dam = bList.reduce((s, i) => s + (Number(i.damaged) || 0), 0);
+                  const avail = Math.max(0, phys - res - dam);
+                  const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                  return `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 6px 10px; font-weight: 600;">${loc.name}</td>
+                      <td style="padding: 6px 10px; color: #64748b;">${loc.type}</td>
+                      <td style="padding: 6px 10px; text-align: right;">${bList.length}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${phys.toLocaleString()}</td>
+                      <td style="padding: 6px 10px; text-align: right; color: #d97706;">${res.toLocaleString()}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: bold; color: #10b981;">${avail.toLocaleString()}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-bottom: 22px; page-break-inside: avoid;">
+            <div style="font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">2. Active Work Orders</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+              <thead>
+                <tr style="background: #0f172a; color: #ffffff;">
+                  <th style="padding: 6px 10px;">WO #</th>
+                  <th style="padding: 6px 10px;">Facility</th>
+                  <th style="padding: 6px 10px;">Required Material</th>
+                  <th style="padding: 6px 10px; text-align: right;">Qty</th>
+                  <th style="padding: 6px 10px;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${woList.length === 0 ? `<tr><td colspan="5" style="text-align:center; padding: 10px; color: #94a3b8; font-style: italic;">No work orders active</td></tr>` : 
+                  woList.slice(0, 5).map((w, idx) => {
+                    const itm = DB.items.find(i => i.id === w.itemId);
+                    const loc = DB.locations.find(l => l.id === w.locationId);
+                    const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                    return `
+                      <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 6px 10px; font-weight: 600;">${w.workOrderNumber}</td>
+                        <td style="padding: 6px 10px;">${loc?.name || w.locationId}</td>
+                        <td style="padding: 6px 10px;">${itm?.name || w.itemId}</td>
+                        <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${w.quantityRequired} ${itm?.uom || ''}</td>
+                        <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${w.status === 'COMPLETED' ? '#dcfce7; color: #166534;' : '#fef3c7; color: #92400e;'}">${w.status}</span></td>
+                      </tr>
+                    `;
+                  }).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-bottom: 22px; page-break-inside: avoid;">
+            <div style="font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">3. Material Transfers & Logistics</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+              <thead>
+                <tr style="background: #0f172a; color: #ffffff;">
+                  <th style="padding: 6px 10px;">Transfer #</th>
+                  <th style="padding: 6px 10px;">Item</th>
+                  <th style="padding: 6px 10px;">Origin</th>
+                  <th style="padding: 6px 10px;">Destination</th>
+                  <th style="padding: 6px 10px; text-align: right;">Qty</th>
+                  <th style="padding: 6px 10px;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${trList.length === 0 ? `<tr><td colspan="6" style="text-align:center; padding: 10px; color: #94a3b8; font-style: italic;">No stock transfers active</td></tr>` :
+                  trList.slice(0, 5).map((t, idx) => {
+                    const itm = DB.items.find(i => i.id === t.itemId);
+                    const sLoc = DB.locations.find(l => l.id === t.sourceLocationId);
+                    const dLoc = DB.locations.find(l => l.id === t.destLocationId);
+                    const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                    return `
+                      <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 6px 10px; font-weight: 600;">${t.transferNumber}</td>
+                        <td style="padding: 6px 10px;">${itm?.name || t.itemId}</td>
+                        <td style="padding: 6px 10px;">${sLoc?.name || t.sourceLocationId}</td>
+                        <td style="padding: 6px 10px;">${dLoc?.name || t.destLocationId}</td>
+                        <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${t.quantity} ${itm?.uom || ''}</td>
+                        <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${t.status === 'RECEIVED' ? '#dcfce7; color: #166534;' : '#e0f2fe; color: #075985;'}">${t.status}</span></td>
+                      </tr>
+                    `;
+                  }).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-bottom: 22px; page-break-inside: avoid;">
+            <div style="font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">4. Customer Orders & Invoices</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+              <thead>
+                <tr style="background: #0f172a; color: #ffffff;">
+                  <th style="padding: 6px 10px;">Order #</th>
+                  <th style="padding: 6px 10px;">Customer</th>
+                  <th style="padding: 6px 10px;">Facility</th>
+                  <th style="padding: 6px 10px;">Items</th>
+                  <th style="padding: 6px 10px;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ordList.length === 0 ? `<tr><td colspan="5" style="text-align:center; padding: 10px; color: #94a3b8; font-style: italic;">No customer orders placed</td></tr>` :
+                  ordList.slice(0, 5).map((o, idx) => {
+                    const loc = DB.locations.find(l => l.id === o.locationId);
+                    const itemStr = (o.items || []).map(it => {
+                      const itemObj = DB.items.find(i => i.id === it.itemId);
+                      return `${it.quantity}× ${itemObj?.name || it.itemId}`;
+                    }).join(', ');
+                    const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                    return `
+                      <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 6px 10px; font-weight: 600;">${o.orderNumber}</td>
+                        <td style="padding: 6px 10px; font-weight: 500;">${o.customerName}</td>
+                        <td style="padding: 6px 10px;">${loc?.name || o.locationId}</td>
+                        <td style="padding: 6px 10px; color: #475569;">${itemStr || 'None'}</td>
+                        <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${o.status === 'FULFILLED' ? '#dcfce7; color: #166534;' : '#fef3c7; color: #92400e;'}">${o.status}</span></td>
+                      </tr>
+                    `;
+                  }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (activeType === 'INVENTORY') {
+        tablesHTML += `
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 6px 10px;">SKU</th>
+                <th style="padding: 6px 10px;">Item Name</th>
+                <th style="padding: 6px 10px;">Category</th>
+                <th style="padding: 6px 10px;">Batch #</th>
+                <th style="padding: 6px 10px;">Facility</th>
+                <th style="padding: 6px 10px; text-align: right;">Physical</th>
+                <th style="padding: 6px 10px; text-align: right;">Reserved</th>
+                <th style="padding: 6px 10px; text-align: right;">Damaged</th>
+                <th style="padding: 6px 10px; text-align: right;">Available</th>
+                <th style="padding: 6px 10px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invList.length === 0 ? `<tr><td colspan="10" style="text-align:center; padding: 14px; color: #94a3b8; font-style: italic;">No inventory batches found in selected scope (0 stock)</td></tr>` :
+                invList.map((batch, idx) => {
+                  const itm = DB.items.find(i => i.id === batch.itemId);
+                  const loc = DB.locations.find(l => l.id === batch.locationId);
+                  const phys = Number(batch.quantity) || 0;
+                  const res = Number(batch.reserved) || 0;
+                  const dam = Number(batch.damaged) || 0;
+                  const avail = Math.max(0, phys - res - dam);
+                  const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                  return `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 6px 10px; font-family: monospace; font-weight: 600;">${itm?.sku || batch.itemId}</td>
+                      <td style="padding: 6px 10px; font-weight: 500;">${itm?.name || 'Unknown Item'}</td>
+                      <td style="padding: 6px 10px; color: #64748b;">${itm?.category || ''}</td>
+                      <td style="padding: 6px 10px; font-family: monospace;">${batch.batchNumber || '—'}</td>
+                      <td style="padding: 6px 10px;">${loc?.name || batch.locationId}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${phys.toLocaleString()} ${itm?.uom || ''}</td>
+                      <td style="padding: 6px 10px; text-align: right; color: #d97706;">${res.toLocaleString()}</td>
+                      <td style="padding: 6px 10px; text-align: right; color: #e11d48;">${dam.toLocaleString()}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: bold; color: #10b981;">${avail.toLocaleString()}</td>
+                      <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${batch.status === 'AVAILABLE' ? '#dcfce7; color: #166534;' : '#f1f5f9; color: #475569;'}">${batch.status || 'ACTIVE'}</span></td>
+                    </tr>
+                  `;
+                }).join('')}
+            </tbody>
+          </table>
+        `;
+      } else if (activeType === 'WORK_ORDERS') {
+        tablesHTML += `
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 6px 10px;">Work Order #</th>
+                <th style="padding: 6px 10px;">Facility</th>
+                <th style="padding: 6px 10px;">Product To Produce</th>
+                <th style="padding: 6px 10px;">Required Material</th>
+                <th style="padding: 6px 10px; text-align: right;">Qty Required</th>
+                <th style="padding: 6px 10px; text-align: right;">Avail at Plant</th>
+                <th style="padding: 6px 10px;">Status</th>
+                <th style="padding: 6px 10px;">Assigned Staff</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${woList.length === 0 ? `<tr><td colspan="8" style="text-align:center; padding: 14px; color: #94a3b8; font-style: italic;">No work orders found in selected scope</td></tr>` :
+                woList.map((wo, idx) => {
+                  const itm = DB.items.find(i => i.id === wo.itemId);
+                  const outItm = DB.items.find(i => i.id === (wo.outputItemId || 'itm-conveyor'));
+                  const loc = DB.locations.find(l => l.id === wo.locationId);
+                  const user = DB.users.find(u => u.id === wo.assignedUserId);
+                  const avail = getStockAtLocation ? getStockAtLocation(wo.itemId, wo.locationId) : 0;
+                  const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                  return `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 6px 10px; font-weight: 600;">${wo.workOrderNumber}</td>
+                      <td style="padding: 6px 10px;">${loc?.name || wo.locationId}</td>
+                      <td style="padding: 6px 10px; font-weight: 500;">${outItm?.name || 'Belt Conveyor System'}</td>
+                      <td style="padding: 6px 10px;">${itm?.name || wo.itemId}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${wo.quantityRequired} ${itm?.uom || ''}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: 600; color: ${avail >= wo.quantityRequired ? '#10b981' : '#e11d48'};">${avail} ${itm?.uom || ''}</td>
+                      <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${wo.status === 'COMPLETED' ? '#dcfce7; color: #166534;' : '#fef3c7; color: #92400e;'}">${wo.status}</span></td>
+                      <td style="padding: 6px 10px;">${user?.name || 'Unassigned'}</td>
+                    </tr>
+                  `;
+                }).join('')}
+            </tbody>
+          </table>
+        `;
+      } else if (activeType === 'TRANSFERS') {
+        tablesHTML += `
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 6px 10px;">Transfer #</th>
+                <th style="padding: 6px 10px;">Item Description</th>
+                <th style="padding: 6px 10px;">Origin Facility</th>
+                <th style="padding: 6px 10px;">Destination Facility</th>
+                <th style="padding: 6px 10px; text-align: right;">Quantity</th>
+                <th style="padding: 6px 10px;">Status</th>
+                <th style="padding: 6px 10px;">Dispatched At</th>
+                <th style="padding: 6px 10px;">Received At</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${trList.length === 0 ? `<tr><td colspan="8" style="text-align:center; padding: 14px; color: #94a3b8; font-style: italic;">No material transfers found in selected scope</td></tr>` :
+                trList.map((tr, idx) => {
+                  const itm = DB.items.find(i => i.id === tr.itemId);
+                  const sLoc = DB.locations.find(l => l.id === tr.sourceLocationId);
+                  const dLoc = DB.locations.find(l => l.id === tr.destLocationId);
+                  const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                  return `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 6px 10px; font-weight: 600;">${tr.transferNumber}</td>
+                      <td style="padding: 6px 10px; font-weight: 500;">${itm?.name || tr.itemId} (${itm?.sku || ''})</td>
+                      <td style="padding: 6px 10px;">${sLoc?.name || tr.sourceLocationId}</td>
+                      <td style="padding: 6px 10px;">${dLoc?.name || tr.destLocationId}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${tr.quantity} ${itm?.uom || ''}</td>
+                      <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${tr.status === 'RECEIVED' ? '#dcfce7; color: #166534;' : (tr.status === 'DISPATCHED' ? '#e0f2fe; color: #075985;' : '#fef3c7; color: #92400e;')}">${tr.status}</span></td>
+                      <td style="padding: 6px 10px; font-size: 10px; color: #64748b;">${tr.dispatchedAt ? new Date(tr.dispatchedAt).toLocaleString() : '—'}</td>
+                      <td style="padding: 6px 10px; font-size: 10px; color: #64748b;">${tr.receivedAt ? new Date(tr.receivedAt).toLocaleString() : '—'}</td>
+                    </tr>
+                  `;
+                }).join('')}
+            </tbody>
+          </table>
+        `;
+      } else if (activeType === 'ORDERS') {
+        tablesHTML += `
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 6px 10px;">Order #</th>
+                <th style="padding: 6px 10px;">Customer Account</th>
+                <th style="padding: 6px 10px;">Fulfillment Facility</th>
+                <th style="padding: 6px 10px;">Items Ordered</th>
+                <th style="padding: 6px 10px; text-align: right;">Total Units</th>
+                <th style="padding: 6px 10px;">Status</th>
+                <th style="padding: 6px 10px;">Order Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${ordList.length === 0 ? `<tr><td colspan="7" style="text-align:center; padding: 14px; color: #94a3b8; font-style: italic;">No customer orders found in selected scope</td></tr>` :
+                ordList.map((ord, idx) => {
+                  const loc = DB.locations.find(l => l.id === ord.locationId);
+                  const totalUnits = (ord.items || []).reduce((s, it) => s + (Number(it.quantity) || 0), 0);
+                  const itemStr = (ord.items || []).map(it => {
+                    const itemObj = DB.items.find(i => i.id === it.itemId);
+                    return `${it.quantity}× ${itemObj?.name || it.itemId}`;
+                  }).join(', ');
+                  const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                  return `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 6px 10px; font-weight: 600;">${ord.orderNumber}</td>
+                      <td style="padding: 6px 10px; font-weight: 500;">${ord.customerName}</td>
+                      <td style="padding: 6px 10px;">${loc?.name || ord.locationId}</td>
+                      <td style="padding: 6px 10px; color: #475569;">${itemStr || 'None'}</td>
+                      <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${totalUnits.toLocaleString()}</td>
+                      <td style="padding: 6px 10px;"><span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; background: ${ord.status === 'FULFILLED' ? '#dcfce7; color: #166534;' : (ord.status === 'RESERVED' ? '#e0f2fe; color: #075985;' : '#fef3c7; color: #92400e;')}">${ord.status}</span></td>
+                      <td style="padding: 6px 10px; font-size: 10px; color: #64748b;">${ord.createdAt ? new Date(ord.createdAt).toLocaleDateString() : dateStr}</td>
+                    </tr>
+                  `;
+                }).join('')}
+            </tbody>
+          </table>
+        `;
+      } else if (activeType === 'LEDGER') {
+        tablesHTML += `
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 6px 8px;">Timestamp</th>
+                <th style="padding: 6px 8px;">Event Type</th>
+                <th style="padding: 6px 8px;">Description</th>
+                <th style="padding: 6px 8px;">Facility</th>
+                <th style="padding: 6px 8px;">Item Affected</th>
+                <th style="padding: 6px 8px; text-align: right;">Delta</th>
+                <th style="padding: 6px 8px;">Ref Document</th>
+                <th style="padding: 6px 8px;">Authorized By</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${ledList.length === 0 ? `<tr><td colspan="8" style="text-align:center; padding: 14px; color: #94a3b8; font-style: italic;">No audit records found in journal</td></tr>` :
+                ledList.slice(-25).reverse().map((entry, idx) => {
+                  const loc = DB.locations.find(l => l.id === entry.locationId);
+                  const itm = DB.items.find(i => i.id === entry.itemId);
+                  const deltaNum = Number(entry.delta) || 0;
+                  const deltaColor = deltaNum > 0 ? '#166534' : (deltaNum < 0 ? '#991b1b' : '#475569');
+                  const rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                  return `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 6px 8px; font-family: monospace;">${entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString() : '—'}</td>
+                      <td style="padding: 6px 8px; font-weight: 600;">${entry.eventType}</td>
+                      <td style="padding: 6px 8px; color: #334155;">${entry.description}</td>
+                      <td style="padding: 6px 8px;">${loc?.name || entry.locationId || '—'}</td>
+                      <td style="padding: 6px 8px;">${itm?.name || entry.itemId || '—'}</td>
+                      <td style="padding: 6px 8px; text-align: right; font-weight: bold; color: ${deltaColor};">${deltaNum > 0 ? '+' : ''}${deltaNum}</td>
+                      <td style="padding: 6px 8px; font-family: monospace;">${entry.referenceId || '—'}</td>
+                      <td style="padding: 6px 8px; color: #64748b;">${entry.userId || 'System'}</td>
+                    </tr>
+                  `;
+                }).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      return `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; padding: ${isPreview ? '4px' : '0'}; line-height: 1.4;">
+          <!-- Corporate Letterhead Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: #0f172a; color: #ffffff; font-weight: 900; font-size: 14px; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">OR</div>
+                <span style="font-size: 18px; font-weight: 900; letter-spacing: -0.5px; color: #0f172a;">ORATIONAL</span>
+              </div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;">Enterprise Operations Platform & Supply Chain ERP</div>
+              <div style="font-size: 14px; font-weight: 800; color: #0284c7; margin-top: 6px;">${reportTitle}</div>
+            </div>
+            <div style="text-align: right; font-size: 10px; color: #475569;">
+              <div style="font-family: monospace; font-weight: bold; color: #0f172a; font-size: 11px;">REF: ${docRef}</div>
+              <div>Generated: <strong>${dateStr} ${timeStr}</strong></div>
+              <div>Prepared By: <strong>${DB.currentUser.name}</strong> (${DB.currentUser.role})</div>
+              <div>Facility Scope: <strong>${locTitle}</strong></div>
+            </div>
+          </div>
+
+          <!-- KPI Summary Boxes -->
+          ${kpiCardsHTML}
+
+          <!-- Detailed Tabular Data -->
+          <div style="margin-bottom: 20px;">
+            ${tablesHTML}
+          </div>
+
+          <!-- Official Sign-off & Verification -->
+          <div style="margin-top: 26px; padding-top: 14px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; font-size: 10px; color: #64748b; page-break-inside: avoid;">
+            <div>
+              <span style="font-weight: 600; color: #0f172a;">Certified Operator:</span> ${DB.currentUser.name} (${DB.currentUser.role})
+              <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">ORATIONAL Compliance Journal Verified</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="border-bottom: 1px solid #94a3b8; width: 140px; margin-bottom: 3px;"></div>
+              <span style="font-size: 9px;">Authorized Management Sign-Off</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-family: monospace; font-weight: bold; color: #0f172a;">PAGE 1 / 1 • OFFICIAL PDF</span>
+              <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">CONFIDENTIAL & PROPRIETARY</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
     // Window load initialization
     window.onload = () => {
